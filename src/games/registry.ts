@@ -25,7 +25,7 @@ export const games: readonly GameMeta[] = [
     status: 'ready',
   },
   { ...soon('memory-match', '記憶翻牌', 'puzzle', 2, '滑鼠點擊，Esc 暫停', 198), status: 'ready' },
-  soon('2048', '2048', 'puzzle', 3, '方向鍵', 192),
+  { ...soon('2048', '2048', 'puzzle', 3, '方向鍵或 WASD，Esc 暫停', 192), status: 'ready' },
   soon('minesweeper', '踩地雷', 'puzzle', 3, '左鍵翻開、右鍵插旗', 186),
   soon('sudoku', '數獨', 'puzzle', 4, '滑鼠選格、鍵盤填數字', 180),
   soon('link-up', '連連看', 'puzzle', 2, '滑鼠點擊', 174),
@@ -71,6 +71,7 @@ const loaders: Record<string, () => Promise<GameModule>> = {
   tictactoe: () => import('./tictactoe/index.ts'),
   'guess-number': () => import('./guess-number/index.ts'),
   'memory-match': () => import('./memory-match/index.ts'),
+  '2048': () => import('./2048/index.ts'),
 }
 
 /** 載入遊戲模組；尚未開發的遊戲會拋錯 */
