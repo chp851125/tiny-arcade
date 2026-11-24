@@ -59,7 +59,8 @@ destroy 必須清掉所有事件監聽、計時器與迴圈，離開遊戲後不
 - commit 訊息用英文，簡短清楚；一個 branch 可有多個 commit
 - 禁止 force push，禁止修改 git config 與 remote
 - 我只看畫面不看程式碼，所以每項工作完成後自動執行「完成流程」，不用再問我
-- 不要用 gh 操作 issue、repo 設定、secrets，除非我明確要求
+- 可以用 gh 建立 issue（記錄待辦、發現的問題或後續想法），有需要時自行判斷，標題與內文用繁體中文
+- 不要用 gh 操作 repo 設定、secrets，除非我明確要求
 - 遇到無法判斷的錯誤就停下來問我，不要用破壞性手段（例如 reset --hard）
 
 ### 完成流程
