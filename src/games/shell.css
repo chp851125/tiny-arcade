@@ -1,0 +1,14 @@
+.game-shell {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: var(--space-4);
+  height: 100vh;
+  height: 100dvh;
+  padding: var(--space-4);
+}
+
+.game-stage {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}

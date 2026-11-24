@@ -5,6 +5,8 @@ export interface ViewportOptions {
   height: number
   /** 畫布外框背景色（等比縮放後留白處），預設透明 */
   background?: string
+  /** 縮放後呼叫（調整 canvas 尺寸會清空畫面，遊戲暫停時需要靠它重畫） */
+  onResize?: () => void
 }
 
 export interface Viewport {
@@ -54,6 +56,7 @@ export function createViewport(container: HTMLElement, options: ViewportOptions)
     // 邏輯座標 -> 實際像素
     const k = (width * scale * dpr) / width
     ctx.setTransform(k, 0, 0, k, 0, 0)
+    options.onResize?.()
   }
 
   const observer = new ResizeObserver(resize)

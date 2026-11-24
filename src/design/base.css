@@ -5,6 +5,11 @@
   box-sizing: border-box;
 }
 
+/* 根字級隨螢幕放大（1280→16px、1920→約19px、2560→約22px、4K→約29px），rem 跟著縮放 */
+html {
+  font-size: clamp(16px, 0.5vw + 9.6px, 40px);
+}
+
 html,
 body {
   margin: 0;
