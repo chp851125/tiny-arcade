@@ -85,7 +85,11 @@ export function mount(container: HTMLElement, ctx: GameContext): void {
   actions.className = 'ms__actions'
   actions.append(pauseButton, againButton)
 
-  root.append(levelRow, stats, status, boardEl, actions)
+  const top = document.createElement('div')
+  top.className = 'ms__top'
+  top.append(levelRow, stats, actions)
+
+  root.append(top, status, boardEl)
   container.append(root)
 
   // --- 畫面更新 ---

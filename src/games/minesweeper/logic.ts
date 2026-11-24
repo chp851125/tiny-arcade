@@ -12,6 +12,7 @@ export const LEVELS: readonly Level[] = [
   { id: 'easy', label: '初級', cols: 9, rows: 9, mines: 10 },
   { id: 'medium', label: '中級', cols: 16, rows: 16, mines: 40 },
   { id: 'hard', label: '高級', cols: 30, rows: 16, mines: 99 },
+  { id: 'ultimate', label: '終極', cols: 40, rows: 22, mines: 180 },
 ]
 
 /** 某格周圍（最多 8 個）的格子索引 */

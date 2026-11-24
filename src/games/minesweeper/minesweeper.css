@@ -4,9 +4,20 @@
   container-type: size;
   display: flex;
   flex-direction: column;
+  /* safe：內容比視窗大時從頂端開始排，可以捲動 */
+  align-items: safe center;
+  justify-content: safe center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  overflow: auto;
+}
+
+.ms__top {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: var(--space-3);
+  gap: var(--space-3) var(--space-5);
 }
 
 .ms__levels {
@@ -45,12 +56,16 @@
 
 .ms__board {
   --gap: 2px;
-  /* 格子大小同時受寬度與高度限制，三種難度都放得進視窗 */
-  --cell: min(
-    calc((90cqw - (var(--cols) - 1) * var(--gap)) / var(--cols)),
-    calc((56cqh - (var(--rows) - 1) * var(--gap)) / var(--rows)),
-    3.2rem
+  /* 盡量放進視窗，但格子不小於 1.6rem，太大的難度改用捲動 */
+  --cell: max(
+    1.6rem,
+    min(
+      calc((94cqw - (var(--cols) - 1) * var(--gap)) / var(--cols)),
+      calc((100cqh - 10.5rem - (var(--rows) - 1) * var(--gap)) / var(--rows)),
+      3.6rem
+    )
   );
+  flex: none;
   display: grid;
   grid-template-columns: repeat(var(--cols), var(--cell));
   grid-auto-rows: var(--cell);
@@ -69,7 +84,7 @@
   border: 0;
   border-radius: 3px;
   font-family: var(--font-display);
-  font-size: calc(var(--cell) * 0.62);
+  font-size: calc(var(--cell) * 0.72);
   line-height: 1;
   color: var(--ink);
 }
