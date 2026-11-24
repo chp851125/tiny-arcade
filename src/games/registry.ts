@@ -19,7 +19,7 @@ function soon(
 /** 所有遊戲的資料；新增遊戲 = 把 status 改 ready，並在 loaders 接上 */
 export const games: readonly GameMeta[] = [
   // 益智（藍綠）
-  soon('tictactoe', '井字棋', 'puzzle', 1, '滑鼠點擊', 210),
+  { ...soon('tictactoe', '井字棋', 'puzzle', 1, '滑鼠點擊，Esc 暫停', 210), status: 'ready' },
   soon('guess-number', '猜數字 1A2B', 'puzzle', 2, '鍵盤輸入數字', 204),
   soon('memory-match', '記憶翻牌', 'puzzle', 2, '滑鼠點擊', 198),
   soon('2048', '2048', 'puzzle', 3, '方向鍵', 192),
@@ -65,6 +65,7 @@ export function getGameMeta(id: string): GameMeta | undefined {
 /** 各遊戲的動態載入；每款遊戲會分開打包 */
 const loaders: Record<string, () => Promise<GameModule>> = {
   demo: () => import('./demo/index.ts'),
+  tictactoe: () => import('./tictactoe/index.ts'),
 }
 
 /** 載入遊戲模組；尚未開發的遊戲會拋錯 */
