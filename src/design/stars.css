@@ -1,0 +1,21 @@
+.ui-stars {
+  display: inline-flex;
+  gap: 2px;
+  vertical-align: middle;
+}
+
+.ui-stars svg {
+  width: 1.1em;
+  height: 1.1em;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.ui-stars .is-on {
+  fill: var(--accent);
+}
+
+.ui-stars .is-off {
+  fill: var(--white);
+}
