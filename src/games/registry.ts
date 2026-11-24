@@ -20,7 +20,10 @@ function soon(
 export const games: readonly GameMeta[] = [
   // 益智（藍綠）
   { ...soon('tictactoe', '井字棋', 'puzzle', 1, '滑鼠點擊，Esc 暫停', 210), status: 'ready' },
-  soon('guess-number', '猜數字 1A2B', 'puzzle', 2, '鍵盤輸入數字', 204),
+  {
+    ...soon('guess-number', '猜數字 1A2B', 'puzzle', 2, '鍵盤輸入數字，Esc 暫停', 204),
+    status: 'ready',
+  },
   soon('memory-match', '記憶翻牌', 'puzzle', 2, '滑鼠點擊', 198),
   soon('2048', '2048', 'puzzle', 3, '方向鍵', 192),
   soon('minesweeper', '踩地雷', 'puzzle', 3, '左鍵翻開、右鍵插旗', 186),
@@ -66,6 +69,7 @@ export function getGameMeta(id: string): GameMeta | undefined {
 const loaders: Record<string, () => Promise<GameModule>> = {
   demo: () => import('./demo/index.ts'),
   tictactoe: () => import('./tictactoe/index.ts'),
+  'guess-number': () => import('./guess-number/index.ts'),
 }
 
 /** 載入遊戲模組；尚未開發的遊戲會拋錯 */
