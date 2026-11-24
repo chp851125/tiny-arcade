@@ -1,0 +1,115 @@
+.m3 {
+  position: absolute;
+  inset: 0;
+  container-type: size;
+  display: flex;
+  flex-direction: column;
+  align-items: safe center;
+  justify-content: safe center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  overflow: auto;
+}
+
+.m3__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3) var(--space-4);
+}
+
+.m3__levels {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.m3__top .ui-card {
+  display: grid;
+  justify-items: center;
+  min-width: 6rem;
+  padding: var(--space-1) var(--space-3);
+}
+
+.m3__top [hidden] {
+  display: none;
+}
+
+.m3__stat-label {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.m3__stat-value {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  line-height: 1.1;
+}
+
+.m3__status {
+  min-height: 1.5em;
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+}
+
+.m3__board {
+  --size: max(18rem, min(calc(100cqh - 11rem), 92cqw, 40rem));
+  --cell: calc(var(--size) / 8);
+  position: relative;
+  flex: none;
+  width: var(--size);
+  height: var(--size);
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--white);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+}
+
+.m3__tile {
+  --x: 0;
+  --y: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--cell);
+  height: var(--cell);
+  padding: calc(var(--cell) * 0.07);
+  transform: translate(calc(var(--x) * var(--cell)), calc(var(--y) * var(--cell)));
+  transition:
+    transform 0.17s ease-out,
+    opacity 0.2s ease-out;
+  pointer-events: none;
+}
+
+.m3__tile.is-selected {
+  background: var(--accent-soft);
+  border-radius: 8px;
+  animation: m3-bob 0.4s ease-in-out infinite alternate;
+}
+
+.m3__tile.is-clearing {
+  opacity: 0;
+  transform: translate(calc(var(--x) * var(--cell)), calc(var(--y) * var(--cell))) scale(0.2);
+  transition:
+    transform 0.2s ease-in,
+    opacity 0.2s ease-in;
+}
+
+@keyframes m3-bob {
+  to {
+    padding: calc(var(--cell) * 0.12);
+  }
+}
+
+.m3__gem {
+  display: block;
+  width: 100%;
+  height: 100%;
+  stroke: var(--ink);
+  stroke-width: 6;
+  stroke-linejoin: round;
+}
