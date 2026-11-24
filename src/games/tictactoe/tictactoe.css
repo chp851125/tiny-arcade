@@ -1,0 +1,107 @@
+.ttt {
+  position: absolute;
+  inset: 0;
+  container-type: size;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.ttt__score {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.ttt__score .ui-card {
+  display: grid;
+  justify-items: center;
+  min-width: 6rem;
+  padding: var(--space-2) var(--space-4);
+}
+
+.ttt__score-label {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.ttt__score-value {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  line-height: 1.1;
+}
+
+.ttt__status {
+  min-height: 1.5em;
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+}
+
+.ttt__board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  width: min(46cqmin, 34rem);
+}
+
+.ttt__cell {
+  aspect-ratio: 1;
+  padding: 12%;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--white);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition:
+    transform 0.08s ease-out,
+    box-shadow 0.08s ease-out,
+    background 0.08s ease-out;
+}
+
+.ttt__cell.is-open:hover {
+  background: var(--accent-soft);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+.ttt__cell.is-open:active {
+  transform: translate(var(--shadow-offset), var(--shadow-offset));
+  box-shadow: 0 0 0 var(--ink);
+}
+
+.ttt__cell:not(.is-open) {
+  cursor: default;
+}
+
+.ttt__cell.is-win {
+  background: var(--accent);
+}
+
+.ttt__mark {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+
+.ttt__mark--o {
+  stroke: var(--accent);
+}
+
+.ttt__cell.is-win .ttt__mark--o {
+  stroke: var(--white);
+}
+
+.ttt__actions [hidden] {
+  display: none;
+}
+
+.ttt__actions {
+  display: flex;
+  gap: var(--space-3);
+  min-height: 3rem;
+}
