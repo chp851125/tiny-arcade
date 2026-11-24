@@ -1,0 +1,210 @@
+.sd {
+  position: absolute;
+  inset: 0;
+  container-type: size;
+  display: flex;
+  flex-direction: column;
+  align-items: safe center;
+  justify-content: safe center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  overflow: auto;
+}
+
+.sd__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3) var(--space-5);
+}
+
+.sd__levels {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.sd__top .ui-card {
+  display: grid;
+  justify-items: center;
+  min-width: 6rem;
+  padding: var(--space-1) var(--space-4);
+}
+
+.sd__stat-label {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.sd__stat-value {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  line-height: 1.1;
+}
+
+.sd__top [hidden] {
+  display: none;
+}
+
+.sd__status {
+  min-height: 1.5em;
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+}
+
+.sd__play {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  flex: none;
+}
+
+.sd__board {
+  --size: max(18rem, min(calc(100cqh - 11rem), 60cqw, 44rem));
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  width: var(--size);
+  height: var(--size);
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--white);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.sd__cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-right: 1px solid color-mix(in srgb, var(--ink) 35%, var(--white));
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 35%, var(--white));
+  background: var(--white);
+  font-family: var(--font-display);
+  font-size: calc(var(--size) / 9 * 0.62);
+  line-height: 1;
+  color: var(--accent-ink, #1f6feb);
+  cursor: pointer;
+}
+
+.sd__cell:nth-child(3n):not(:nth-child(9n)) {
+  border-right: 3px solid var(--ink);
+}
+
+.sd__cell:nth-child(9n) {
+  border-right: 0;
+}
+
+.sd__cell:nth-child(n + 19):nth-child(-n + 27),
+.sd__cell:nth-child(n + 46):nth-child(-n + 54) {
+  border-bottom: 3px solid var(--ink);
+}
+
+.sd__cell:nth-child(n + 73) {
+  border-bottom: 0;
+}
+
+.sd__cell.is-given {
+  color: var(--ink);
+}
+
+.sd__cell.is-peer {
+  background: color-mix(in srgb, var(--accent) 12%, var(--white));
+}
+
+.sd__cell.is-same {
+  background: color-mix(in srgb, var(--accent) 35%, var(--white));
+}
+
+.sd__cell.is-selected {
+  background: var(--accent);
+}
+
+.sd__cell.is-conflict {
+  color: #d62f2f;
+}
+
+.sd__cell.is-conflict .sd__value {
+  text-decoration: underline wavy #d62f2f;
+  text-underline-offset: 0.12em;
+}
+
+.sd__notes {
+  position: absolute;
+  inset: 6%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  place-items: center;
+  font-family: var(--font-body);
+  font-size: calc(var(--size) / 9 * 0.27);
+  font-weight: 700;
+  color: color-mix(in srgb, var(--ink) 65%, var(--white));
+  pointer-events: none;
+}
+
+.sd__notes[hidden] {
+  display: none;
+}
+
+.sd__notes .is-same {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--accent) 45%, var(--white));
+  border-radius: 3px;
+}
+
+.sd__side {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: stretch;
+  width: 12rem;
+}
+
+.sd__pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+
+.sd__key {
+  aspect-ratio: 1;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--white);
+  box-shadow: var(--shadow);
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  line-height: 1;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    transform 0.08s ease-out,
+    box-shadow 0.08s ease-out;
+}
+
+.sd__key:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+.sd__key:active {
+  transform: translate(var(--shadow-offset), var(--shadow-offset));
+  box-shadow: 0 0 0 var(--ink);
+}
+
+/* 這個數字 1~9 都填完了 */
+.sd__key.is-done {
+  background: #2fb67c;
+  color: var(--white);
+}
+
+.sd__hint {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  white-space: pre-line;
+  opacity: 0.75;
+}
