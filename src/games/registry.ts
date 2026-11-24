@@ -36,7 +36,10 @@ export const games: readonly GameMeta[] = [
   },
   { ...soon('link-up', '連連看', 'puzzle', 2, '滑鼠點擊，Esc 暫停', 174), status: 'ready' },
   { ...soon('match-three', '三消', 'puzzle', 2, '滑鼠拖曳或點選，Esc 暫停', 168), status: 'ready' },
-  soon('sokoban', '推箱子', 'puzzle', 4, '方向鍵', 162),
+  {
+    ...soon('sokoban', '推箱子', 'puzzle', 4, '方向鍵或 WASD，Z 復原，R 重來', 162),
+    status: 'ready',
+  },
   // 經典街機（紅橘）
   soon('snake', '貪食蛇', 'arcade', 2, '方向鍵', 355),
   soon('pong', '乒乓', 'arcade', 2, 'W / S 或上下鍵', 2),
@@ -82,6 +85,7 @@ const loaders: Record<string, () => Promise<GameModule>> = {
   sudoku: () => import('./sudoku/index.ts'),
   'link-up': () => import('./link-up/index.ts'),
   'match-three': () => import('./match-three/index.ts'),
+  sokoban: () => import('./sokoban/index.ts'),
 }
 
 /** 載入遊戲模組；尚未開發的遊戲會拋錯 */
