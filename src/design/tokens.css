@@ -1,0 +1,39 @@
+/* 設計 token：粗框貼紙風 */
+:root {
+  /* 色票 */
+  --paper: #fff7d6;
+  --ink: #1b1b1b;
+  --muted: #6b6448;
+  --white: #ffffff;
+  --accent: #ff6b4a;
+  --accent-soft: color-mix(in srgb, var(--accent) 25%, var(--paper));
+
+  /* 框線與圓角 */
+  --border-w: 3px;
+  --border: var(--border-w) solid var(--ink);
+  --radius: 8px;
+
+  /* 間距 */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2.5rem;
+
+  /* 字級（流體） */
+  --fs-sm: clamp(0.8rem, 0.75rem + 0.2vw, 0.95rem);
+  --fs-md: clamp(1rem, 0.9rem + 0.3vw, 1.2rem);
+  --fs-lg: clamp(1.25rem, 1.05rem + 0.6vw, 1.7rem);
+  --fs-xl: clamp(1.75rem, 1.3rem + 1.4vw, 2.75rem);
+  --fs-2xl: clamp(2.5rem, 1.6rem + 3vw, 5rem);
+
+  /* 硬邊偏移陰影（無模糊） */
+  --shadow-offset: 4px;
+  --shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--ink);
+  --shadow-lg: 8px 8px 0 var(--ink);
+
+  /* 字型 */
+  --font-display: 'Lilita One', 'Noto Sans TC', system-ui, sans-serif;
+  --font-body: 'Noto Sans TC', system-ui, sans-serif;
+}
