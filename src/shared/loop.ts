@@ -85,6 +85,8 @@ export function createLoop(options: LoopOptions): Loop {
       document.addEventListener('visibilitychange', onVisibility)
       window.addEventListener('blur', onBlur)
       window.addEventListener('focus', onFocus)
+      // 先畫出第一幀，即使一開始沒有焦點也不會是空白畫面
+      options.render(0)
       sync()
     },
     stop() {
