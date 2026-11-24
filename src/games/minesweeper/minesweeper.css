@@ -1,0 +1,171 @@
+.ms {
+  position: absolute;
+  inset: 0;
+  container-type: size;
+  display: flex;
+  flex-direction: column;
+  /* safe：內容比視窗大時從頂端開始排，可以捲動 */
+  align-items: safe center;
+  justify-content: safe center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  overflow: auto;
+}
+
+.ms__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3) var(--space-5);
+}
+
+.ms__levels {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.ms__stats {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.ms__stats .ui-card {
+  display: grid;
+  justify-items: center;
+  min-width: 6rem;
+  padding: var(--space-1) var(--space-4);
+}
+
+.ms__stat-label {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.ms__stat-value {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  line-height: 1.1;
+}
+
+.ms__status {
+  min-height: 1.5em;
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+}
+
+.ms__board {
+  --gap: 2px;
+  /* 盡量放進視窗，但格子不小於 1.6rem，太大的難度改用捲動 */
+  --cell: max(
+    1.6rem,
+    min(
+      calc((94cqw - (var(--cols) - 1) * var(--gap)) / var(--cols)),
+      calc((100cqh - 10.5rem - (var(--rows) - 1) * var(--gap)) / var(--rows)),
+      3.6rem
+    )
+  );
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--cell));
+  grid-auto-rows: var(--cell);
+  gap: var(--gap);
+  padding: var(--gap);
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+.ms__cell {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  font-family: var(--font-display);
+  font-size: calc(var(--cell) * 0.72);
+  line-height: 1;
+  color: var(--ink);
+}
+
+.ms__cell.is-hidden,
+.ms__cell.is-flag {
+  background: var(--accent-soft);
+  cursor: pointer;
+}
+
+.ms__cell.is-hidden:hover {
+  background: var(--accent);
+}
+
+.ms__cell.is-open {
+  background: var(--paper);
+  cursor: default;
+}
+
+.ms__cell.is-mine {
+  background: var(--paper);
+}
+
+.ms__cell.is-hit {
+  background: #ff6b5e;
+}
+
+.ms__cell.is-wrong {
+  background: var(--accent-soft);
+  opacity: 0.6;
+}
+
+.ms__cell[data-n='1'] {
+  color: #1f6feb;
+}
+.ms__cell[data-n='2'] {
+  color: #1a8f4a;
+}
+.ms__cell[data-n='3'] {
+  color: #d62f2f;
+}
+.ms__cell[data-n='4'] {
+  color: #5b2fb5;
+}
+.ms__cell[data-n='5'] {
+  color: #b34a00;
+}
+.ms__cell[data-n='6'] {
+  color: #008b8b;
+}
+.ms__cell[data-n='7'] {
+  color: #1b1b1b;
+}
+.ms__cell[data-n='8'] {
+  color: #6b6b6b;
+}
+
+.ms__icon {
+  width: 80%;
+  height: 80%;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ms__flag-fill {
+  fill: #ff6b5e;
+}
+
+.ms__mine-fill {
+  fill: var(--ink);
+}
+
+.ms__actions {
+  display: flex;
+  gap: var(--space-3);
+  min-height: 3rem;
+}
+
+.ms__actions [hidden] {
+  display: none;
+}
