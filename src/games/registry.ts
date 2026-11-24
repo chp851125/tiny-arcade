@@ -34,7 +34,7 @@ export const games: readonly GameMeta[] = [
     ...soon('sudoku', '數獨', 'puzzle', 4, '滑鼠選格、鍵盤填數字，右鍵寫小字', 180),
     status: 'ready',
   },
-  soon('link-up', '連連看', 'puzzle', 2, '滑鼠點擊', 174),
+  { ...soon('link-up', '連連看', 'puzzle', 2, '滑鼠點擊，Esc 暫停', 174), status: 'ready' },
   soon('match-three', '三消', 'puzzle', 2, '滑鼠拖曳', 168),
   soon('sokoban', '推箱子', 'puzzle', 4, '方向鍵', 162),
   // 經典街機（紅橘）
@@ -80,6 +80,7 @@ const loaders: Record<string, () => Promise<GameModule>> = {
   '2048': () => import('./2048/index.ts'),
   minesweeper: () => import('./minesweeper/index.ts'),
   sudoku: () => import('./sudoku/index.ts'),
+  'link-up': () => import('./link-up/index.ts'),
 }
 
 /** 載入遊戲模組；尚未開發的遊戲會拋錯 */
