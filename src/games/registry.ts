@@ -30,7 +30,10 @@ export const games: readonly GameMeta[] = [
     ...soon('minesweeper', '踩地雷', 'puzzle', 3, '左鍵翻開、右鍵插旗，Esc 暫停', 186),
     status: 'ready',
   },
-  soon('sudoku', '數獨', 'puzzle', 4, '滑鼠選格、鍵盤填數字', 180),
+  {
+    ...soon('sudoku', '數獨', 'puzzle', 4, '滑鼠選格、鍵盤填數字，右鍵寫小字', 180),
+    status: 'ready',
+  },
   soon('link-up', '連連看', 'puzzle', 2, '滑鼠點擊', 174),
   soon('match-three', '三消', 'puzzle', 2, '滑鼠拖曳', 168),
   soon('sokoban', '推箱子', 'puzzle', 4, '方向鍵', 162),
@@ -76,6 +79,7 @@ const loaders: Record<string, () => Promise<GameModule>> = {
   'memory-match': () => import('./memory-match/index.ts'),
   '2048': () => import('./2048/index.ts'),
   minesweeper: () => import('./minesweeper/index.ts'),
+  sudoku: () => import('./sudoku/index.ts'),
 }
 
 /** 載入遊戲模組；尚未開發的遊戲會拋錯 */
