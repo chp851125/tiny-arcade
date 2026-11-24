@@ -59,6 +59,18 @@
   font-size: var(--fs-md);
 }
 
+.sk__ref {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  opacity: 0.75;
+}
+
+.sk__ref.is-met {
+  opacity: 1;
+  color: #1a8f4a;
+}
+
 .sk__board {
   --cell: max(1.8rem, min(calc(92cqw / var(--cols)), calc((100cqh - 13rem) / var(--rows)), 4.2rem));
   flex: none;

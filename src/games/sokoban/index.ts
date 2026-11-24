@@ -4,7 +4,7 @@ import type { DialogHandle } from '../../design/index.ts'
 import type { GameContext } from '../types.ts'
 import { LEVELS } from './levels.ts'
 import { cloneState, isSolved, parseLevel, step } from './logic.ts'
-import type { Direction, State } from './logic.ts'
+import type { Direction, Level, State } from './logic.ts'
 
 /** 推箱子：方向鍵（或 WASD）移動並推箱子，把所有箱子推到目標上 */
 
@@ -21,6 +21,8 @@ const KEYS: Record<string, Direction> = {
 }
 
 let cleanup: (() => void) | null = null
+
+const FALLBACK: Level = { name: '', best: { moves: 0, pushes: 0 }, rows: ['#@#'] }
 
 function createPlayer(): SVGSVGElement {
   const svg = document.createElementNS(SVG_NS, 'svg')
@@ -43,7 +45,7 @@ function createStat(label: string): { card: HTMLElement; value: HTMLElement } {
 
 export function mount(container: HTMLElement, ctx: GameContext): void {
   let levelIndex = 0
-  let state: State = parseLevel(LEVELS[0] ?? { name: '', rows: ['#@#'] })
+  let state: State = parseLevel(LEVELS[0] ?? FALLBACK)
   let history: State[] = []
   let solved = false
   let paused = false
@@ -80,10 +82,13 @@ export function mount(container: HTMLElement, ctx: GameContext): void {
   status.className = 'sk__status'
   status.setAttribute('aria-live', 'polite')
 
+  const reference = document.createElement('p')
+  reference.className = 'sk__ref'
+
   const boardEl = document.createElement('div')
   boardEl.className = 'sk__board'
 
-  root.append(levelRow, top, status, boardEl)
+  root.append(levelRow, top, status, reference, boardEl)
   container.append(root)
 
   // --- 畫面更新 ---
@@ -122,6 +127,11 @@ export function mount(container: HTMLElement, ctx: GameContext): void {
     } else {
       status.textContent = `第 ${levelIndex + 1} / ${LEVELS.length} 關`
     }
+    const best = (LEVELS[levelIndex] ?? FALLBACK).best
+    reference.textContent = `參考：最短 ${best.moves} 步、最少推 ${best.pushes} 次`
+    reference.classList.toggle('is-met', solved && state.moves <= best.moves)
+    if (solved && state.moves <= best.moves) reference.textContent += '　達成最短步數！'
+    else if (solved && state.pushes <= best.pushes) reference.textContent += '　推箱次數已達最少！'
     nextButton.hidden = !solved || last
     undoButton.disabled = history.length === 0 || solved
   }
@@ -130,7 +140,7 @@ export function mount(container: HTMLElement, ctx: GameContext): void {
   const load = (index: number): void => {
     if (paused) return
     levelIndex = Math.min(Math.max(index, 0), LEVELS.length - 1)
-    state = parseLevel(LEVELS[levelIndex] ?? { name: '', rows: ['#@#'] })
+    state = parseLevel(LEVELS[levelIndex] ?? FALLBACK)
     history = []
     solved = false
     buildBoard()

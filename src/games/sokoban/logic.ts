@@ -12,6 +12,8 @@ export const DELTAS: Record<Direction, { dx: number; dy: number }> = {
  */
 export interface Level {
   name: string
+  /** 程式算出的最少步數與最少推箱次數（兩者通常不是同一種解法） */
+  best: { moves: number; pushes: number }
   rows: readonly string[]
 }
 
