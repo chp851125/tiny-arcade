@@ -49,7 +49,7 @@
     3rem,
     min(
       calc((90cqw - (var(--cols) - 1) * var(--gap)) / var(--cols)),
-      calc((100cqh - 16rem - (var(--rows) - 1) * var(--gap)) / var(--rows)),
+      calc((100cqh - 13.5rem - (var(--rows) - 1) * var(--gap)) / var(--rows)),
       8rem
     )
   );

@@ -7,19 +7,20 @@ import type { GameContext } from '../types.ts'
 
 /** 記憶翻牌：兩張一組翻開，相同就留下；可選三種難度（牌數不同） */
 
-const MISMATCH_DELAY_MS = 800
-
 interface Level {
   id: string
   label: string
   cols: number
   rows: number
+  /** 翻到不一樣的牌後，多久會蓋回去（毫秒）；越難越短 */
+  hideMs: number
 }
 
 const LEVELS: readonly Level[] = [
-  { id: 'easy', label: '簡單', cols: 4, rows: 3 },
-  { id: 'normal', label: '普通', cols: 4, rows: 4 },
-  { id: 'hard', label: '困難', cols: 6, rows: 4 },
+  { id: 'easy', label: '簡單', cols: 4, rows: 3, hideMs: 1100 },
+  { id: 'normal', label: '普通', cols: 6, rows: 4, hideMs: 800 },
+  { id: 'hard', label: '困難', cols: 8, rows: 5, hideMs: 600 },
+  { id: 'expert', label: '專家', cols: 8, rows: 6, hideMs: 450 },
 ]
 
 interface Card {
@@ -42,7 +43,7 @@ function createStat(label: string): { card: HTMLElement; value: HTMLElement } {
 export function mount(container: HTMLElement, ctx: GameContext): void {
   const rng = createRandom(Date.now())
 
-  let level: Level = LEVELS[1] as Level
+  let level: Level = LEVELS[0] as Level
   let cards: Card[] = []
   let buttons: HTMLButtonElement[] = []
   let moves = 0
@@ -61,7 +62,7 @@ export function mount(container: HTMLElement, ctx: GameContext): void {
   levelRow.className = 'mm__levels'
   const levelButtons = LEVELS.map((l) => {
     const b = Button({ label: l.label, variant: 'secondary', onClick: () => setLevel(l) })
-    b.title = `${l.cols}×${l.rows}，${(l.cols * l.rows) / 2} 對`
+    b.title = `${l.cols}×${l.rows}，${(l.cols * l.rows) / 2} 對，${(l.hideMs / 1000).toFixed(2)} 秒後蓋回`
     levelRow.append(b)
     return b
   })
@@ -144,7 +145,7 @@ export function mount(container: HTMLElement, ctx: GameContext): void {
         timer = window.setTimeout(() => {
           hidePicked()
           render()
-        }, MISMATCH_DELAY_MS)
+        }, level.hideMs)
       }
     }
     render()
