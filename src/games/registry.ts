@@ -41,7 +41,7 @@ export const games: readonly GameMeta[] = [
     status: 'ready',
   },
   // 經典街機（紅橘）
-  soon('snake', '貪食蛇', 'arcade', 2, '方向鍵', 355),
+  { ...soon('snake', '貪食蛇', 'arcade', 2, '方向鍵或 WASD，Esc 暫停', 355), status: 'ready' },
   soon('pong', '乒乓', 'arcade', 2, 'W / S 或上下鍵', 2),
   soon('breakout', '打磚塊', 'arcade', 3, '左右鍵或滑鼠', 10),
   soon('tetris', '俄羅斯方塊', 'arcade', 4, '方向鍵、空白鍵', 18),
@@ -86,6 +86,7 @@ const loaders: Record<string, () => Promise<GameModule>> = {
   'link-up': () => import('./link-up/index.ts'),
   'match-three': () => import('./match-three/index.ts'),
   sokoban: () => import('./sokoban/index.ts'),
+  snake: () => import('./snake/index.ts'),
 }
 
 /** 載入遊戲模組；尚未開發的遊戲會拋錯 */
