@@ -66,7 +66,10 @@ export const games: readonly GameMeta[] = [
     status: 'ready',
   },
   // 冒險策略（紫青）
-  soon('tower-defense', '塔防', 'adventure', 4, '滑鼠點擊', 282),
+  {
+    ...soon('tower-defense', '塔防', 'adventure', 4, '滑鼠蓋塔、數字鍵選塔', 282),
+    status: 'ready',
+  },
   soon('roguelike', 'Roguelike 地牢', 'adventure', 5, '方向鍵、數字鍵', 270),
   soon('card-battle', '卡牌戰鬥', 'adventure', 4, '滑鼠點擊', 200),
   soon('bullet-hell', '彈幕射擊', 'adventure', 5, '方向鍵、Shift 慢速', 186),
@@ -109,6 +112,7 @@ const loaders: Record<string, () => Promise<GameModule>> = {
   flappy: () => import('./flappy/index.ts'),
   'catch-fruit': () => import('./catch-fruit/index.ts'),
   'endless-runner': () => import('./endless-runner/index.ts'),
+  'tower-defense': () => import('./tower-defense/index.ts'),
 }
 
 /** 載入遊戲模組；尚未開發的遊戲會拋錯 */
