@@ -9,6 +9,11 @@
   gap: var(--space-4);
 }
 
+.mm__levels {
+  display: flex;
+  gap: var(--space-3);
+}
+
 .mm__stats {
   display: flex;
   gap: var(--space-4);
@@ -39,14 +44,22 @@
 }
 
 .mm__board {
+  --gap: var(--space-3);
+  --cell: max(
+    3rem,
+    min(
+      calc((90cqw - (var(--cols) - 1) * var(--gap)) / var(--cols)),
+      calc((100cqh - 16rem - (var(--rows) - 1) * var(--gap)) / var(--rows)),
+      8rem
+    )
+  );
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-3);
-  width: min(52cqmin, 34rem);
+  grid-template-columns: repeat(var(--cols), var(--cell));
+  grid-auto-rows: var(--cell);
+  gap: var(--gap);
 }
 
 .mm__card {
-  aspect-ratio: 1;
   padding: 14%;
   border: var(--border);
   border-radius: var(--radius);

@@ -2,34 +2,24 @@ import './memory-match.css'
 import { Button, Card, Dialog } from '../../design/index.ts'
 import type { DialogHandle } from '../../design/index.ts'
 import { createRandom } from '../../shared/random.ts'
+import { createSymbolSvg } from '../../shared/symbols.ts'
 import type { GameContext } from '../types.ts'
 
-/** 記憶翻牌：4×4 共 8 對圖案，兩張一組翻開，相同就留下 */
+/** 記憶翻牌：兩張一組翻開，相同就留下；可選三種難度（牌數不同） */
 
-const SVG_NS = 'http://www.w3.org/2000/svg'
 const MISMATCH_DELAY_MS = 800
 
-interface Symbol {
-  color: string
-  shape: string
+interface Level {
+  id: string
+  label: string
+  cols: number
+  rows: number
 }
 
-const SYMBOLS: readonly Symbol[] = [
-  { color: '#ff6b5e', shape: '<circle cx="50" cy="50" r="30"/>' },
-  { color: '#4aa3ff', shape: '<rect x="22" y="22" width="56" height="56" rx="6"/>' },
-  { color: '#ffc933', shape: '<path d="M50 18L84 78H16Z"/>' },
-  {
-    color: '#2fb67c',
-    shape: '<path d="M50 14L60 40L88 42L66 60L74 86L50 70L26 86L34 60L12 42L40 40Z"/>',
-  },
-  { color: '#b36bff', shape: '<path d="M50 14L84 50L50 86L16 50Z"/>' },
-  {
-    color: '#ff7ab8',
-    shape:
-      '<path d="M50 82C10 52 18 20 38 20C46 20 50 28 50 32C50 28 54 20 62 20C82 20 90 52 50 82Z"/>',
-  },
-  { color: '#ff9a3c', shape: '<path d="M38 16H62V38H84V62H62V84H38V62H16V38H38Z"/>' },
-  { color: '#3fd0d0', shape: '<path d="M62 14A38 38 0 1 0 86 62A30 30 0 0 1 62 14Z"/>' },
+const LEVELS: readonly Level[] = [
+  { id: 'easy', label: '簡單', cols: 4, rows: 3 },
+  { id: 'normal', label: '普通', cols: 4, rows: 4 },
+  { id: 'hard', label: '困難', cols: 6, rows: 4 },
 ]
 
 interface Card {
@@ -39,16 +29,6 @@ interface Card {
 }
 
 let cleanup: (() => void) | null = null
-
-function createFace(symbol: Symbol): SVGSVGElement {
-  const svg = document.createElementNS(SVG_NS, 'svg')
-  svg.setAttribute('viewBox', '0 0 100 100')
-  svg.setAttribute('class', 'mm__symbol')
-  svg.setAttribute('aria-hidden', 'true')
-  svg.style.fill = symbol.color
-  svg.innerHTML = symbol.shape
-  return svg
-}
 
 function createStat(label: string): { card: HTMLElement; value: HTMLElement } {
   const name = document.createElement('span')
@@ -62,7 +42,9 @@ function createStat(label: string): { card: HTMLElement; value: HTMLElement } {
 export function mount(container: HTMLElement, ctx: GameContext): void {
   const rng = createRandom(Date.now())
 
+  let level: Level = LEVELS[1] as Level
   let cards: Card[] = []
+  let buttons: HTMLButtonElement[] = []
   let moves = 0
   let pairs = 0
   let picked: number[] = []
@@ -74,6 +56,15 @@ export function mount(container: HTMLElement, ctx: GameContext): void {
   // --- 畫面 ---
   const root = document.createElement('div')
   root.className = 'mm'
+
+  const levelRow = document.createElement('div')
+  levelRow.className = 'mm__levels'
+  const levelButtons = LEVELS.map((l) => {
+    const b = Button({ label: l.label, variant: 'secondary', onClick: () => setLevel(l) })
+    b.title = `${l.cols}×${l.rows}，${(l.cols * l.rows) / 2} 對`
+    levelRow.append(b)
+    return b
+  })
 
   const stats = document.createElement('div')
   stats.className = 'mm__stats'
@@ -87,15 +78,6 @@ export function mount(container: HTMLElement, ctx: GameContext): void {
 
   const boardEl = document.createElement('div')
   boardEl.className = 'mm__board'
-  const buttons = Array.from({ length: SYMBOLS.length * 2 }, (_, i) => {
-    const b = document.createElement('button')
-    b.type = 'button'
-    b.className = 'mm__card'
-    b.setAttribute('aria-label', `第 ${i + 1} 張牌`)
-    b.addEventListener('click', () => onCardClick(i))
-    boardEl.append(b)
-    return b
-  })
 
   const pauseButton = Button({ label: '暫停', variant: 'secondary', onClick: () => pause() })
   const againButton = Button({ label: '再來一局', onClick: () => restart() })
@@ -103,12 +85,13 @@ export function mount(container: HTMLElement, ctx: GameContext): void {
   actions.className = 'mm__actions'
   actions.append(pauseButton, againButton)
 
-  root.append(stats, status, boardEl, actions)
+  root.append(levelRow, stats, status, boardEl, actions)
   container.append(root)
 
   // --- 流程 ---
   const render = (): void => {
-    const won = pairs === SYMBOLS.length
+    const total = (level.cols * level.rows) / 2
+    const won = pairs === total
     cards.forEach((card, i) => {
       const b = buttons[i]
       if (!b) return
@@ -116,11 +99,13 @@ export function mount(container: HTMLElement, ctx: GameContext): void {
       b.classList.toggle('is-open', face)
       b.classList.toggle('is-matched', card.matched)
       b.disabled = face
-      const symbol = SYMBOLS[card.symbol]
-      b.replaceChildren(...(face && symbol ? [createFace(symbol)] : []))
+      b.replaceChildren(...(face ? [createSymbolSvg(card.symbol, 'mm__symbol')] : []))
     })
     movesStat.value.textContent = String(moves)
-    pairsStat.value.textContent = `${pairs} / ${SYMBOLS.length}`
+    pairsStat.value.textContent = `${pairs} / ${total}`
+    levelButtons.forEach((b, i) => {
+      b.className = `ui-button ui-button--${LEVELS[i] === level ? 'primary' : 'secondary'}`
+    })
     status.textContent = won ? `全部配對完成！用了 ${moves} 步` : '翻開兩張相同的牌'
     againButton.hidden = !won
     pauseButton.hidden = won
@@ -153,7 +138,7 @@ export function mount(container: HTMLElement, ctx: GameContext): void {
         second.matched = true
         picked = []
         pairs += 1
-        ctx.audio.play(pairs === SYMBOLS.length ? 'success' : 'score')
+        ctx.audio.play(pairs === (level.cols * level.rows) / 2 ? 'success' : 'score')
       } else {
         locked = true
         timer = window.setTimeout(() => {
@@ -168,13 +153,31 @@ export function mount(container: HTMLElement, ctx: GameContext): void {
   const restart = (): void => {
     window.clearTimeout(timer)
     timer = 0
-    const order = rng.shuffle(SYMBOLS.flatMap((_, i) => [i, i]))
+    const count = (level.cols * level.rows) / 2
+    const order = rng.shuffle(Array.from({ length: count }, (_, i) => [i, i]).flat())
+    boardEl.style.setProperty('--cols', String(level.cols))
+    boardEl.style.setProperty('--rows', String(level.rows))
+    buttons = order.map((_, i) => {
+      const b = document.createElement('button')
+      b.type = 'button'
+      b.className = 'mm__card'
+      b.setAttribute('aria-label', `第 ${i + 1} 張牌`)
+      b.addEventListener('click', () => onCardClick(i))
+      return b
+    })
+    boardEl.replaceChildren(...buttons)
     cards = order.map((symbol) => ({ symbol, open: false, matched: false }))
     moves = 0
     pairs = 0
     picked = []
     locked = false
     render()
+  }
+
+  const setLevel = (next: Level): void => {
+    if (paused) return
+    level = next
+    restart()
   }
 
   const closeDialog = (): void => {
@@ -184,7 +187,7 @@ export function mount(container: HTMLElement, ctx: GameContext): void {
   }
 
   const pause = (): void => {
-    if (paused || pairs === SYMBOLS.length) return
+    if (paused || pairs === (level.cols * level.rows) / 2) return
     paused = true
     // 暫停時蓋回尚未配對的牌，避免偷看
     hidePicked()
