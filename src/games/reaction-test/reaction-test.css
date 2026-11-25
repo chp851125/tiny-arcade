@@ -1,0 +1,125 @@
+.rt {
+  position: absolute;
+  inset: 0;
+  container-type: size;
+  display: flex;
+  flex-direction: column;
+  align-items: safe center;
+  justify-content: safe center;
+  gap: var(--space-4);
+  padding: var(--space-3);
+  overflow: auto;
+}
+
+.rt__stats {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.rt__stats .ui-card {
+  display: grid;
+  justify-items: center;
+  min-width: 7rem;
+  padding: var(--space-2) var(--space-4);
+}
+
+.rt__stat-label {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.rt__stat-value {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  line-height: 1.1;
+}
+
+.rt__panel {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--space-3);
+  flex: none;
+  width: min(86cqw, 56rem);
+  height: min(46cqh, 26rem);
+  padding: var(--space-4);
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--accent);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.rt__panel:active {
+  transform: translate(var(--shadow-offset), var(--shadow-offset));
+  box-shadow: 0 0 0 var(--ink);
+}
+
+.rt__panel[data-phase='waiting'] {
+  background: #ff6b5e;
+}
+
+.rt__panel[data-phase='go'] {
+  background: #2fb67c;
+}
+
+.rt__panel[data-phase='early'] {
+  background: #ffc933;
+}
+
+.rt__panel[data-phase='result'],
+.rt__panel[data-phase='summary'] {
+  background: var(--white);
+}
+
+.rt__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  line-height: 1.1;
+}
+
+.rt__sub {
+  font-size: var(--fs-md);
+  font-weight: 700;
+}
+
+.rt__history {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.rt__slot {
+  display: grid;
+  place-items: center;
+  min-width: 5rem;
+  padding: var(--space-2) var(--space-3);
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--paper);
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  opacity: 0.5;
+}
+
+.rt__slot.is-done {
+  background: var(--white);
+  opacity: 1;
+}
+
+.rt__slot.is-best {
+  background: #2fb67c;
+  color: var(--white);
+}
+
+.rt__actions {
+  display: flex;
+  gap: var(--space-3);
+  min-height: 3rem;
+}
+
+.rt__actions [hidden] {
+  display: none;
+}
