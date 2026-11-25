@@ -19,19 +19,6 @@ export const OPPOSITE: Record<Direction, Direction> = {
   right: 'left',
 }
 
-export interface Level {
-  id: string
-  label: string
-  /** 每秒走幾格 */
-  speed: number
-}
-
-export const LEVELS: readonly Level[] = [
-  { id: 'easy', label: '簡單', speed: 7 },
-  { id: 'normal', label: '普通', speed: 10 },
-  { id: 'hard', label: '困難', speed: 14 },
-]
-
 export interface Cell {
   x: number
   y: number

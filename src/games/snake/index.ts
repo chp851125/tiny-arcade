@@ -5,8 +5,8 @@ import type { Loop } from '../../shared/loop.ts'
 import { createRandom } from '../../shared/random.ts'
 import type { Viewport } from '../../shared/viewport.ts'
 import type { GameContext } from '../types.ts'
-import { COLS, DELTAS, LEVELS, OPPOSITE, ROWS, advance, createState } from './logic.ts'
-import type { Direction, Level, State } from './logic.ts'
+import { COLS, DELTAS, OPPOSITE, ROWS, advance, createState } from './logic.ts'
+import type { Direction, State } from './logic.ts'
 
 /** 貪食蛇：方向鍵（或 WASD）控制，吃食物變長，撞牆或撞到自己就結束 */
 
@@ -15,9 +15,11 @@ const HEIGHT = 600
 const CELL = 30
 const BOARD_X = (WIDTH - COLS * CELL) / 2
 const BOARD_Y = 96
-/** 每吃一個食物，速度多加一點（格／秒），最多加到 +6 */
+/** 起始速度（格／秒）；每吃一個食物加快一點，最快 20 格／秒 */
+const START_SPEED = 7
 const SPEED_GAIN = 0.3
-const SPEED_GAIN_MAX = 6
+const MAX_SPEED = 20
+const FOOD_SCORE = 10
 
 const KEYS: Record<string, Direction> = {
   ArrowUp: 'up',
@@ -49,24 +51,22 @@ export function mount(_container: HTMLElement, ctx: GameContext): void {
   const accent = style.getPropertyValue('--accent').trim() || '#ff6b4a'
   const white = style.getPropertyValue('--white').trim() || '#ffffff'
 
-  let level: Level = LEVELS[0] as Level
   let state: State = createState(rng)
   let phase: Phase = 'menu'
   let best = 0
   let acc = 0
   const queue: Direction[] = []
 
-  const interval = (): number =>
-    1 / (level.speed + Math.min(SPEED_GAIN_MAX, state.eaten * SPEED_GAIN))
+  const speed = (): number => Math.min(MAX_SPEED, START_SPEED + state.eaten * SPEED_GAIN)
+  const interval = (): number => 1 / speed()
 
   const closeDialog = (): void => {
     dialog?.close()
     dialog = null
   }
 
-  const start = (next: Level): void => {
+  const start = (): void => {
     closeDialog()
-    level = next
     state = createState(rng)
     queue.length = 0
     acc = 0
@@ -74,25 +74,16 @@ export function mount(_container: HTMLElement, ctx: GameContext): void {
     loop?.resume()
   }
 
-  const levelButtons = (): HTMLElement[] =>
-    LEVELS.map((l) =>
-      Button({
-        label: l.label,
-        variant: l === level ? 'primary' : 'secondary',
-        onClick: () => start(l),
-      }),
-    )
-
   const showMenu = (): void => {
     closeDialog()
     state = createState(rng)
     phase = 'menu'
     dialog = Dialog({
       title: '貪食蛇',
-      content: ['方向鍵或 WASD 控制方向，Esc 暫停。', '選擇難度開始：'],
+      content: ['方向鍵或 WASD 控制方向，Esc 暫停。', '吃得越多，速度越快。'],
       actions: [
         Button({ label: '回大廳', variant: 'secondary', onClick: () => ctx.exitToLobby() }),
-        ...levelButtons(),
+        Button({ label: '開始', onClick: () => start() }),
       ],
     })
     dialog.open()
@@ -107,11 +98,11 @@ export function mount(_container: HTMLElement, ctx: GameContext): void {
       title: state.won ? '填滿整個畫面！' : '遊戲結束',
       content: [
         `分數 ${state.score}，長度 ${state.snake.length}，本次最高 ${best}`,
-        '再玩一次，或換個難度：',
+        '再玩一次嗎？',
       ],
       actions: [
         Button({ label: '回大廳', variant: 'secondary', onClick: () => ctx.exitToLobby() }),
-        ...levelButtons(),
+        Button({ label: '再玩一次', onClick: () => start() }),
       ],
     })
     dialog.open()
@@ -167,7 +158,7 @@ export function mount(_container: HTMLElement, ctx: GameContext): void {
       const dir = queue.shift() ?? state.dir
       const { ate } = advance(state, dir, rng)
       if (ate) {
-        state.score += 10 * (LEVELS.indexOf(level) + 1)
+        state.score += FOOD_SCORE
         ctx.audio.play('score')
       }
       if (!state.alive) {
@@ -194,7 +185,7 @@ export function mount(_container: HTMLElement, ctx: GameContext): void {
 
     // 上方資訊
     drawText(`分數 ${state.score}`, BOARD_X, 48, 'left')
-    drawText(level.label, WIDTH / 2, 48, 'center')
+    drawText(`速度 ${Math.round(speed())}`, WIDTH / 2, 48, 'center')
     drawText(`最高 ${Math.max(best, state.score)}`, WIDTH - BOARD_X, 48, 'right')
 
     // 棋盤
