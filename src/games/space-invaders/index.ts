@@ -26,15 +26,21 @@ import {
   invaderPos,
   update as step,
 } from './logic.ts'
-import type { InvadersEvent, State } from './logic.ts'
+import type { InvadersEvent, PowerupType, State } from './logic.ts'
 import { CRAB, OCTOPUS, SHIP, SQUID, UFO } from './sprites.ts'
 import type { Sprite } from './sprites.ts'
 
-/** 太空侵略者：左右鍵（或 A / D）移動，空白鍵射擊，擋住外星人直到打光 */
+/** 太空侵略者：左右鍵（或 A / D）移動，自動射擊，擋住外星人直到打光 */
 
 type Phase = 'menu' | 'playing' | 'paused' | 'over'
 
 const PX = 3
+const POWERUP_STYLE: Record<PowerupType, { color: string; label: string }> = {
+  triple: { color: '#4aa3ff', label: '三' },
+  rapid: { color: '#ffc933', label: '速' },
+  shield: { color: '#2fb67c', label: '盾' },
+  repair: { color: '#b36bff', label: '修' },
+}
 const ROW_SPRITES = [SQUID, CRAB, CRAB, OCTOPUS, OCTOPUS]
 const ROW_COLORS = ['#b36bff', '#4aa3ff', '#4aa3ff', '#2fb67c', '#2fb67c']
 
@@ -78,8 +84,8 @@ export function mount(_container: HTMLElement, ctx: GameContext): void {
     dialog = Dialog({
       title: '太空侵略者',
       content: [
-        '← → 或 A / D 移動，空白鍵射擊，Esc 暫停。',
-        '躲在碉堡後面，別讓外星人降到你的高度。打下飛碟有高分。',
+        '← → 或 A / D 移動，會自動射擊，Esc 暫停。',
+        '你的子彈能穿過自己的碉堡，躲在後面最安全。接住掉下來的道具：三向、連發、護盾、修復碉堡。',
       ],
       actions: [
         Button({ label: '回大廳', variant: 'secondary', onClick: () => ctx.exitToLobby() }),
@@ -143,9 +149,10 @@ export function mount(_container: HTMLElement, ctx: GameContext): void {
 
   const play = (events: InvadersEvent[]): void => {
     for (const ev of events) {
-      if (ev === 'shoot') ctx.audio.play('click')
-      else if (ev === 'kill') ctx.audio.play('score')
-      else if (ev === 'ufo-hit' || ev === 'wave-clear') ctx.audio.play('success')
+      if (ev === 'kill') ctx.audio.play('score')
+      else if (ev === 'ufo-hit' || ev === 'wave-clear' || ev === 'powerup' || ev === 'extra-life')
+        ctx.audio.play('success')
+      else if (ev === 'shield-break') ctx.audio.play('click')
       else if (ev === 'player-hit' || ev === 'gameover') ctx.audio.play('explosion')
     }
   }
@@ -156,8 +163,7 @@ export function mount(_container: HTMLElement, ctx: GameContext): void {
     elapsed += dt
     const left = ctx.input.isDown('ArrowLeft') || ctx.input.isDown('KeyA')
     const right = ctx.input.isDown('ArrowRight') || ctx.input.isDown('KeyD')
-    const fire = ctx.input.isDown('Space') || ctx.input.isDown('ArrowUp')
-    play(step(state, dt, { dir: (right ? 1 : 0) - (left ? 1 : 0), fire }, rng))
+    play(step(state, dt, { dir: (right ? 1 : 0) - (left ? 1 : 0) }, rng))
     if (state.gameOver) finish()
   }
 
@@ -246,6 +252,38 @@ export function mount(_container: HTMLElement, ctx: GameContext): void {
     if (state.respawn <= 0 && (state.invuln <= 0 || Math.floor(elapsed * 10) % 2 === 0)) {
       drawSprite(SHIP, state.playerX, PLAYER_Y, accent)
     }
+
+    // 護盾
+    if (state.shield && state.respawn <= 0) {
+      g.beginPath()
+      g.arc(state.playerX, PLAYER_Y + 10, 30, 0, Math.PI * 2)
+      g.lineWidth = 4
+      g.strokeStyle = '#2fb67c'
+      g.stroke()
+    }
+
+    // 道具
+    for (const p of state.powerups) {
+      g.fillStyle = ink
+      g.beginPath()
+      g.arc(p.x + 2, p.y + 2, 14, 0, Math.PI * 2)
+      g.fill()
+      g.fillStyle = POWERUP_STYLE[p.type].color
+      g.beginPath()
+      g.arc(p.x, p.y, 14, 0, Math.PI * 2)
+      g.fill()
+      g.lineWidth = 3
+      g.strokeStyle = ink
+      g.stroke()
+      drawText(POWERUP_STYLE[p.type].label, p.x, p.y + 1, 16, 'center')
+    }
+
+    // 目前生效的道具
+    const effects: string[] = []
+    if (state.triple > 0) effects.push(`三向 ${Math.ceil(state.triple)}`)
+    if (state.rapid > 0) effects.push(`連發 ${Math.ceil(state.rapid)}`)
+    if (state.shield) effects.push('護盾')
+    if (effects.length > 0) drawText(effects.join('　'), 24, 56, 18, 'left')
 
     // 子彈
     g.fillStyle = ink

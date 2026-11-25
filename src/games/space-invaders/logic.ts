@@ -13,7 +13,7 @@ export const INV_H = 24
 const FORMATION_X = 76
 const FORMATION_Y0 = 96
 const STEP_PX = 14
-const DROP_PX = 20
+const DROP_PX = 16
 const EDGE = 20
 
 export const PLAYER_Y = HEIGHT - 52
@@ -22,7 +22,13 @@ export const PLAYER_H = 24
 const PLAYER_SPEED = 330
 const PLAYER_BULLET_SPEED = 660
 const FIRE_COOLDOWN = 0.3
-const MAX_PLAYER_BULLETS = 2
+const MAX_PLAYER_BULLETS = 3
+const RAPID_COOLDOWN = 0.13
+const EFFECT_TIME = 8
+const POWERUP_SPEED = 140
+const DROP_CHANCE = 0.18
+const EXTRA_LIFE_EVERY = 1500
+const MAX_LIVES = 5
 const RESPAWN_TIME = 1.2
 const INVULN_TIME = 2
 
@@ -46,6 +52,17 @@ export const START_LIVES = 3
 export interface Bullet {
   x: number
   y: number
+  /** 水平速度（三向子彈才有） */
+  vx?: number
+}
+
+export type PowerupType = 'triple' | 'rapid' | 'shield' | 'repair'
+export const POWERUP_TYPES: readonly PowerupType[] = ['triple', 'rapid', 'shield', 'repair']
+
+export interface Powerup {
+  x: number
+  y: number
+  type: PowerupType
 }
 
 export interface UfoState {
@@ -70,6 +87,12 @@ export interface State {
   enemyBullets: Bullet[]
   fireCooldown: number
   enemyFireTimer: number
+  /** 掉落中的道具，以及三向／連發的剩餘秒數與護盾 */
+  powerups: Powerup[]
+  triple: number
+  rapid: number
+  shield: boolean
+  nextLifeScore: number
   bunkers: boolean[][]
   ufo: UfoState | null
   ufoTimer: number
@@ -82,7 +105,17 @@ export interface State {
 }
 
 export type InvadersEvent =
-  'shoot' | 'step' | 'kill' | 'ufo-hit' | 'player-hit' | 'wave-clear' | 'gameover' | 'enemy-shoot'
+  | 'shoot'
+  | 'step'
+  | 'kill'
+  | 'ufo-hit'
+  | 'player-hit'
+  | 'wave-clear'
+  | 'gameover'
+  | 'enemy-shoot'
+  | 'powerup'
+  | 'shield-break'
+  | 'extra-life'
 
 /** 碉堡形狀：上方兩角削掉，下方中間挖一個拱門 */
 function bunkerShape(): boolean[] {
@@ -111,6 +144,7 @@ function fillWave(state: State): void {
   state.enemyBullets = []
   state.waveTimer = 0
   state.enemyFireTimer = 1
+  state.powerups = []
 }
 
 export function createState(rng: Random): State {
@@ -129,6 +163,11 @@ export function createState(rng: Random): State {
     enemyBullets: [],
     fireCooldown: 0,
     enemyFireTimer: 1,
+    powerups: [],
+    triple: 0,
+    rapid: 0,
+    shield: false,
+    nextLifeScore: EXTRA_LIFE_EVERY,
     bunkers: Array.from({ length: BUNKER_COUNT }, () => bunkerShape()),
     ufo: null,
     ufoTimer: 12 + rng.next() * 10,
@@ -156,7 +195,7 @@ export const rowScore = (row: number): number => (row === 0 ? 30 : row < 3 ? 20 
 function stepInterval(s: State): number {
   const total = INV_COLS * INV_ROWS
   const f = aliveCount(s) / total
-  const speed = (40 + 240 * (1 - f) * (1 - f)) * (1 + 0.12 * (s.wave - 1))
+  const speed = (32 + 230 * (1 - f) * (1 - f)) * (1 + 0.1 * (s.wave - 1))
   return STEP_PX / speed
 }
 
@@ -218,9 +257,8 @@ function crushBunkers(s: State): void {
 }
 
 export interface Controls {
-  /** -1 左、0 不動、1 右 */
+  /** -1 左、0 不動、1 右（射擊是自動的） */
   dir: number
-  fire: boolean
 }
 
 export function update(s: State, dt: number, controls: Controls, rng: Random): InvadersEvent[] {
@@ -236,18 +274,23 @@ export function update(s: State, dt: number, controls: Controls, rng: Random): I
       Math.min(WIDTH - PLAYER_W / 2 - 8, s.playerX + controls.dir * PLAYER_SPEED * dt),
     )
     s.fireCooldown -= dt
-    if (
-      controls.fire &&
-      s.fireCooldown <= 0 &&
-      s.bullets.length < MAX_PLAYER_BULLETS &&
-      s.waveTimer <= 0
-    ) {
+    const maxBullets = s.triple > 0 ? MAX_PLAYER_BULLETS * 3 : s.rapid > 0 ? 6 : MAX_PLAYER_BULLETS
+    if (s.fireCooldown <= 0 && s.bullets.length < maxBullets && s.waveTimer <= 0) {
       s.bullets.push({ x: s.playerX, y: PLAYER_Y - 6 })
-      s.fireCooldown = FIRE_COOLDOWN
+      if (s.triple > 0) {
+        const side = PLAYER_BULLET_SPEED * 0.22
+        s.bullets.push(
+          { x: s.playerX, y: PLAYER_Y - 6, vx: -side },
+          { x: s.playerX, y: PLAYER_Y - 6, vx: side },
+        )
+      }
+      s.fireCooldown = s.rapid > 0 ? RAPID_COOLDOWN : FIRE_COOLDOWN
       events.push('shoot')
     }
   }
   if (s.invuln > 0) s.invuln -= dt
+  if (s.triple > 0) s.triple -= dt
+  if (s.rapid > 0) s.rapid -= dt
 
   // 清完一波，稍等再開始下一波
   if (s.waveTimer > 0) {
@@ -281,9 +324,9 @@ export function update(s: State, dt: number, controls: Controls, rng: Random): I
 
   // 外星人開火
   s.enemyFireTimer -= dt
-  const maxEnemyBullets = Math.min(5, 3 + Math.floor(s.wave / 2))
+  const maxEnemyBullets = Math.min(4, 2 + Math.floor(s.wave / 3))
   if (s.enemyFireTimer <= 0 && s.enemyBullets.length < maxEnemyBullets) {
-    s.enemyFireTimer = Math.max(0.35, 1.4 - 0.1 * (s.wave - 1)) * (0.6 + rng.next() * 0.8)
+    s.enemyFireTimer = Math.max(0.5, 1.8 - 0.1 * (s.wave - 1)) * (0.6 + rng.next() * 0.8)
     const cols = Array.from({ length: INV_COLS }, (_, c) => c).filter((c) =>
       s.alive.some((row) => row[c]),
     )
@@ -298,6 +341,7 @@ export function update(s: State, dt: number, controls: Controls, rng: Random): I
   }
 
   moveBullets(s, dt, events, rng)
+  movePowerups(s, dt, events)
 
   // 飛碟
   s.ufoTimer -= dt
@@ -341,13 +385,13 @@ function stepFormation(s: State): void {
 }
 
 function moveBullets(s: State, dt: number, events: InvadersEvent[], rng: Random): void {
-  // 玩家子彈：分成小段前進，避免穿過碉堡
+  // 玩家子彈：可以穿過自己的碉堡；分成小段前進，避免穿過外星人
   s.bullets = s.bullets.filter((b) => {
     const steps = Math.ceil((PLAYER_BULLET_SPEED * dt) / 3)
     for (let i = 0; i < steps; i++) {
       b.y -= (PLAYER_BULLET_SPEED * dt) / steps
-      if (b.y < 30) return false
-      if (hitBunker(s, b.x, b.y, 1, rng)) return false
+      b.x += ((b.vx ?? 0) * dt) / steps
+      if (b.y < 30 || b.x < 0 || b.x > WIDTH) return false
       // 外星人
       for (let r = 0; r < INV_ROWS; r++) {
         for (let c = 0; c < INV_COLS; c++) {
@@ -355,8 +399,9 @@ function moveBullets(s: State, dt: number, events: InvadersEvent[], rng: Random)
           const p = invaderPos(s, r, c)
           if (b.x >= p.x && b.x <= p.x + INV_W && b.y >= p.y && b.y <= p.y + INV_H) {
             ;(s.alive[r] as boolean[])[c] = false
-            s.score += rowScore(r)
+            addScore(s, rowScore(r), events)
             events.push('kill')
+            maybeDrop(s, p.x + INV_W / 2, p.y, rng, DROP_CHANCE)
             return false
           }
         }
@@ -368,7 +413,8 @@ function moveBullets(s: State, dt: number, events: InvadersEvent[], rng: Random)
         b.y <= UFO_Y + UFO_H &&
         b.y >= UFO_Y
       ) {
-        s.score += s.ufo.points
+        addScore(s, s.ufo.points, events)
+        maybeDrop(s, s.ufo.x + UFO_W / 2, UFO_Y, rng, 1)
         s.ufo = null
         events.push('ufo-hit')
         return false
@@ -392,6 +438,12 @@ function moveBullets(s: State, dt: number, events: InvadersEvent[], rng: Random)
         b.y <= PLAYER_Y + PLAYER_H &&
         Math.abs(b.x - s.playerX) <= PLAYER_W / 2
       ) {
+        if (s.shield) {
+          s.shield = false
+          s.invuln = 0.6
+          events.push('shield-break')
+          return false
+        }
         s.lives -= 1
         events.push('player-hit')
         if (s.lives <= 0) {
@@ -407,5 +459,41 @@ function moveBullets(s: State, dt: number, events: InvadersEvent[], rng: Random)
       }
     }
     return true
+  })
+}
+
+function addScore(s: State, points: number, events: InvadersEvent[]): void {
+  s.score += points
+  while (s.score >= s.nextLifeScore) {
+    s.nextLifeScore += EXTRA_LIFE_EVERY
+    if (s.lives < MAX_LIVES) {
+      s.lives += 1
+      events.push('extra-life')
+    }
+  }
+}
+
+/** 依機率在某處掉出一個隨機道具 */
+function maybeDrop(s: State, x: number, y: number, rng: Random, chance: number): void {
+  if (rng.next() < chance) s.powerups.push({ x, y, type: rng.pick(POWERUP_TYPES) })
+}
+
+/** 道具往下掉，被玩家接到就生效 */
+function movePowerups(s: State, dt: number, events: InvadersEvent[]): void {
+  s.powerups = s.powerups.filter((p) => {
+    p.y += POWERUP_SPEED * dt
+    if (p.y > HEIGHT) return false
+    const caught =
+      s.respawn <= 0 &&
+      p.y >= PLAYER_Y - 10 &&
+      p.y <= PLAYER_Y + PLAYER_H &&
+      Math.abs(p.x - s.playerX) <= PLAYER_W / 2 + 12
+    if (!caught) return true
+    if (p.type === 'triple') s.triple = EFFECT_TIME
+    else if (p.type === 'rapid') s.rapid = EFFECT_TIME
+    else if (p.type === 'shield') s.shield = true
+    else s.bunkers = s.bunkers.map(() => bunkerShape())
+    events.push('powerup')
+    return false
   })
 }
