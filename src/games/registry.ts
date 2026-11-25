@@ -78,7 +78,10 @@ export const games: readonly GameMeta[] = [
     ...soon('card-battle', '卡牌戰鬥', 'adventure', 4, '滑鼠點牌出牌、數字鍵快捷', 200),
     status: 'ready',
   },
-  soon('bullet-hell', '彈幕射擊', 'adventure', 5, '方向鍵、Shift 慢速', 186),
+  {
+    ...soon('bullet-hell', '彈幕射擊', 'adventure', 5, '方向鍵移動、Shift 慢速、Space 炸彈', 186),
+    status: 'ready',
+  },
   // 範例遊戲，只用來驗證框架
   {
     id: 'demo',
@@ -121,6 +124,7 @@ const loaders: Record<string, () => Promise<GameModule>> = {
   'tower-defense': () => import('./tower-defense/index.ts'),
   roguelike: () => import('./roguelike/index.ts'),
   'card-battle': () => import('./card-battle/index.ts'),
+  'bullet-hell': () => import('./bullet-hell/index.ts'),
 }
 
 /** 載入遊戲模組；尚未開發的遊戲會拋錯 */
