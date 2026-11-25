@@ -4,9 +4,24 @@
   container-type: size;
   display: flex;
   flex-direction: column;
+  /* safe：內容比視窗大時從頂端開始排並可捲動，不會被上方資訊列蓋住 */
+  align-items: safe center;
+  justify-content: safe center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  overflow: auto;
+}
+
+.mm__top {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: var(--space-4);
+  gap: var(--space-3) var(--space-5);
+}
+
+.mm__top [hidden] {
+  display: none;
 }
 
 .mm__levels {
@@ -23,7 +38,7 @@
   display: grid;
   justify-items: center;
   min-width: 6rem;
-  padding: var(--space-2) var(--space-4);
+  padding: var(--space-1) var(--space-4);
 }
 
 .mm__stat-label {
@@ -48,11 +63,12 @@
   --cell: max(
     3rem,
     min(
-      calc((90cqw - (var(--cols) - 1) * var(--gap)) / var(--cols)),
-      calc((100cqh - 13.5rem - (var(--rows) - 1) * var(--gap)) / var(--rows)),
-      8rem
+      calc((94cqw - (var(--cols) - 1) * var(--gap)) / var(--cols)),
+      calc((100cqh - 10.5rem - (var(--rows) - 1) * var(--gap)) / var(--rows)),
+      5.6rem
     )
   );
+  flex: none;
   display: grid;
   grid-template-columns: repeat(var(--cols), var(--cell));
   grid-auto-rows: var(--cell);
@@ -97,14 +113,4 @@
   stroke: var(--ink);
   stroke-width: 5;
   stroke-linejoin: round;
-}
-
-.mm__actions {
-  display: flex;
-  gap: var(--space-3);
-  min-height: 3rem;
-}
-
-.mm__actions [hidden] {
-  display: none;
 }

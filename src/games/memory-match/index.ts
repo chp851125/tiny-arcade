@@ -82,11 +82,12 @@ export function mount(container: HTMLElement, ctx: GameContext): void {
 
   const pauseButton = Button({ label: '暫停', variant: 'secondary', onClick: () => pause() })
   const againButton = Button({ label: '再來一局', onClick: () => restart() })
-  const actions = document.createElement('div')
-  actions.className = 'mm__actions'
-  actions.append(pauseButton, againButton)
+  // 難度、統計、按鈕排在同一列，把垂直空間留給牌板（和踩地雷一樣）
+  const top = document.createElement('div')
+  top.className = 'mm__top'
+  top.append(levelRow, stats, pauseButton, againButton)
 
-  root.append(levelRow, stats, status, boardEl, actions)
+  root.append(top, status, boardEl)
   container.append(root)
 
   // --- 流程 ---
