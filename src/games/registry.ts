@@ -70,7 +70,10 @@ export const games: readonly GameMeta[] = [
     ...soon('tower-defense', '塔防', 'adventure', 4, '滑鼠蓋塔、數字鍵選塔', 282),
     status: 'ready',
   },
-  soon('roguelike', 'Roguelike 地牢', 'adventure', 5, '方向鍵、數字鍵', 270),
+  {
+    ...soon('roguelike', 'Roguelike 地牢', 'adventure', 5, '方向鍵移動攻擊、數字鍵用道具', 270),
+    status: 'ready',
+  },
   soon('card-battle', '卡牌戰鬥', 'adventure', 4, '滑鼠點擊', 200),
   soon('bullet-hell', '彈幕射擊', 'adventure', 5, '方向鍵、Shift 慢速', 186),
   // 範例遊戲，只用來驗證框架
@@ -113,6 +116,7 @@ const loaders: Record<string, () => Promise<GameModule>> = {
   'catch-fruit': () => import('./catch-fruit/index.ts'),
   'endless-runner': () => import('./endless-runner/index.ts'),
   'tower-defense': () => import('./tower-defense/index.ts'),
+  roguelike: () => import('./roguelike/index.ts'),
 }
 
 /** 載入遊戲模組；尚未開發的遊戲會拋錯 */
