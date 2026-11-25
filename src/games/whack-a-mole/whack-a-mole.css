@@ -1,0 +1,134 @@
+.wm {
+  position: absolute;
+  inset: 0;
+  container-type: size;
+  display: flex;
+  flex-direction: column;
+  align-items: safe center;
+  justify-content: safe center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  overflow: auto;
+}
+
+.wm__stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3) var(--space-4);
+}
+
+.wm__stats .ui-card {
+  display: grid;
+  justify-items: center;
+  min-width: 6.5rem;
+  padding: var(--space-1) var(--space-3);
+}
+
+.wm__stat-label {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.wm__stat-value {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  line-height: 1.1;
+}
+
+.wm__hint {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  opacity: 0.75;
+}
+
+.wm__board {
+  --size: max(18rem, min(calc(100cqh - 11rem), 90cqw, 42rem));
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  width: var(--size);
+  user-select: none;
+}
+
+.wm__cell {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: #b9e4a6;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+
+/* 洞口前緣的土堆，蓋住地鼠的下半身 */
+.wm__mound {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -6%;
+  height: 34%;
+  border: var(--border);
+  border-radius: 50%;
+  background: #8a5a35;
+  z-index: 2;
+}
+
+.wm__mole {
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: 16%;
+  aspect-ratio: 1;
+  transform: translateY(110%);
+  transition: transform 0.1s ease-out;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.wm__cell.is-up .wm__mole {
+  transform: translateY(0);
+}
+
+.wm__cell.is-hit .wm__mole {
+  transform: translateY(18%) scaleY(0.7);
+  filter: brightness(1.2);
+}
+
+.wm__face {
+  display: block;
+  width: 100%;
+  height: 100%;
+  stroke: var(--ink);
+  stroke-width: 3;
+}
+
+.wm__pop {
+  position: absolute;
+  left: 50%;
+  top: 22%;
+  z-index: 3;
+  transform: translateX(-50%);
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  color: #1a8f4a;
+  -webkit-text-stroke: 2px var(--ink);
+  paint-order: stroke fill;
+  pointer-events: none;
+  animation: wm-pop 0.7s ease-out forwards;
+}
+
+.wm__pop.is-bad {
+  color: #d62f2f;
+}
+
+@keyframes wm-pop {
+  to {
+    transform: translate(-50%, -2.2rem);
+    opacity: 0;
+  }
+}
