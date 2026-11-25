@@ -59,7 +59,7 @@ export const games: readonly GameMeta[] = [
     status: 'ready',
   },
   { ...soon('whack-a-mole', '打地鼠', 'reflex', 2, '滑鼠點擊，Esc 暫停', 46), status: 'ready' },
-  soon('flappy', 'Flappy', 'reflex', 4, '空白鍵', 340),
+  { ...soon('flappy', 'Flappy', 'reflex', 4, '空白鍵、↑ 或滑鼠點擊', 340), status: 'ready' },
   soon('catch-fruit', '接水果', 'reflex', 2, '左右鍵', 332),
   soon('endless-runner', '無盡跑酷', 'reflex', 3, '空白鍵跳躍', 326),
   // 冒險策略（紫青）
@@ -103,6 +103,7 @@ const loaders: Record<string, () => Promise<GameModule>> = {
   pacman: () => import('./pacman/index.ts'),
   'reaction-test': () => import('./reaction-test/index.ts'),
   'whack-a-mole': () => import('./whack-a-mole/index.ts'),
+  flappy: () => import('./flappy/index.ts'),
 }
 
 /** 載入遊戲模組；尚未開發的遊戲會拋錯 */
