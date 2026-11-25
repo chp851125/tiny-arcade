@@ -44,7 +44,10 @@ export const games: readonly GameMeta[] = [
   { ...soon('snake', '貪食蛇', 'arcade', 2, '方向鍵或 WASD，Esc 暫停', 355), status: 'ready' },
   { ...soon('pong', '乒乓', 'arcade', 2, 'W / S 或上下鍵，Esc 暫停', 2), status: 'ready' },
   { ...soon('breakout', '打磚塊', 'arcade', 3, '左右鍵或滑鼠，空白鍵發球', 10), status: 'ready' },
-  soon('tetris', '俄羅斯方塊', 'arcade', 4, '方向鍵、空白鍵', 18),
+  {
+    ...soon('tetris', '俄羅斯方塊', 'arcade', 4, '方向鍵、空白鍵直落、C 暫存', 18),
+    status: 'ready',
+  },
   soon('space-invaders', '太空侵略者', 'arcade', 3, '左右鍵、空白鍵', 25),
   soon('pacman', '小精靈', 'arcade', 4, '方向鍵', 32),
   // 反應（黃粉）
@@ -89,6 +92,7 @@ const loaders: Record<string, () => Promise<GameModule>> = {
   snake: () => import('./snake/index.ts'),
   pong: () => import('./pong/index.ts'),
   breakout: () => import('./breakout/index.ts'),
+  tetris: () => import('./tetris/index.ts'),
 }
 
 /** 載入遊戲模組；尚未開發的遊戲會拋錯 */
