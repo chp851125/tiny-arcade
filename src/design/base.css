@@ -17,6 +17,9 @@ body {
 }
 
 body {
+  /* 全站不讓滑鼠拖曳時反白文字（遊戲常用拖曳與連點） */
+  -webkit-user-select: none;
+  user-select: none;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-body);
@@ -57,4 +60,11 @@ button {
 :focus-visible {
   outline: var(--border-w) dashed var(--ink);
   outline-offset: 3px;
+}
+
+/* 圖片與畫布不能被拖走 */
+canvas,
+svg,
+img {
+  -webkit-user-drag: none;
 }
