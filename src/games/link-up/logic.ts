@@ -11,8 +11,8 @@ export interface Level {
 
 export const LEVELS: readonly Level[] = [
   { id: 'easy', label: '簡單', cols: 8, rows: 6, types: 12 },
-  { id: 'normal', label: '普通', cols: 12, rows: 8, types: 20 },
-  { id: 'hard', label: '困難', cols: 16, rows: 10, types: 28 },
+  { id: 'normal', label: '普通', cols: 12, rows: 8, types: 18 },
+  { id: 'hard', label: '困難', cols: 16, rows: 10, types: 24 },
 ]
 
 /**

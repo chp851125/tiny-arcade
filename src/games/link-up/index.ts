@@ -2,6 +2,7 @@ import './link-up.css'
 import { Button, Card, Dialog } from '../../design/index.ts'
 import type { DialogHandle } from '../../design/index.ts'
 import { createRandom } from '../../shared/random.ts'
+import { createSymbolSvg } from '../../shared/symbols.ts'
 import type { GameContext } from '../types.ts'
 import { LEVELS, createBoard, findMove, findPath, pointOf, remaining, reshuffle } from './logic.ts'
 import type { Board, Level, Point } from './logic.ts'
@@ -12,30 +13,7 @@ const SVG_NS = 'http://www.w3.org/2000/svg'
 const PATH_SHOW_MS = 260
 const HINT_SHOW_MS = 1500
 
-const SHAPES: readonly string[] = [
-  '<circle cx="50" cy="50" r="30"/>',
-  '<rect x="22" y="22" width="56" height="56" rx="6"/>',
-  '<path d="M50 18L84 78H16Z"/>',
-  '<path d="M50 14L60 40L88 42L66 60L74 86L50 70L26 86L34 60L12 42L40 40Z"/>',
-  '<path d="M50 14L84 50L50 86L16 50Z"/>',
-  '<path d="M50 82C10 52 18 20 38 20C46 20 50 28 50 32C50 28 54 20 62 20C82 20 90 52 50 82Z"/>',
-  '<path d="M38 16H62V38H84V62H62V84H38V62H16V38H38Z"/>',
-  '<path d="M62 14A38 38 0 1 0 86 62A30 30 0 0 1 62 14Z"/>',
-]
-const COLORS = ['#ff6b5e', '#4aa3ff', '#ffc933', '#2fb67c']
-
 let cleanup: (() => void) | null = null
-
-function createSymbol(type: number): SVGSVGElement {
-  const t = type - 1
-  const svg = document.createElementNS(SVG_NS, 'svg')
-  svg.setAttribute('viewBox', '0 0 100 100')
-  svg.setAttribute('class', 'lu__symbol')
-  svg.setAttribute('aria-hidden', 'true')
-  svg.style.fill = COLORS[Math.floor(t / SHAPES.length) % COLORS.length] ?? '#000'
-  svg.innerHTML = SHAPES[t % SHAPES.length] ?? ''
-  return svg
-}
 
 function createStat(label: string): { card: HTMLElement; value: HTMLElement } {
   const name = document.createElement('span')
@@ -116,7 +94,7 @@ export function mount(container: HTMLElement, ctx: GameContext): void {
       const shown = el.dataset.type === String(type)
       if (!shown) {
         el.dataset.type = String(type)
-        el.replaceChildren(...(type > 0 ? [createSymbol(type)] : []))
+        el.replaceChildren(...(type > 0 ? [createSymbolSvg(type - 1, 'lu__symbol')] : []))
       }
       el.classList.toggle('is-empty', type === 0)
       el.classList.toggle('is-selected', i === selected)

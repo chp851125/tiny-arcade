@@ -5,83 +5,49 @@ export function accentFromHue(hue: number): string {
   return `hsl(${hue} 78% 62%)`
 }
 
-function soon(
+/** 建立一款遊戲的資料；預設是可玩（ready），尚未開發的才傳 'soon' */
+function game(
   id: string,
   name: string,
   category: GameCategory,
   difficulty: GameMeta['difficulty'],
   controls: string,
   hue: number,
+  status: GameMeta['status'] = 'ready',
 ): GameMeta {
-  return { id, name, category, difficulty, controls, accent: accentFromHue(hue), status: 'soon' }
+  return { id, name, category, difficulty, controls, accent: accentFromHue(hue), status }
 }
 
-/** 所有遊戲的資料；新增遊戲 = 把 status 改 ready，並在 loaders 接上 */
+/** 所有遊戲的資料；新增遊戲 = 在這裡加一筆，並在 loaders 接上 */
 export const games: readonly GameMeta[] = [
   // 益智（藍綠）
-  { ...soon('tictactoe', '井字棋', 'puzzle', 1, '滑鼠點擊，Esc 暫停', 210), status: 'ready' },
-  {
-    ...soon('guess-number', '猜數字 1A2B', 'puzzle', 2, '鍵盤輸入數字，Esc 暫停', 204),
-    status: 'ready',
-  },
-  { ...soon('memory-match', '記憶翻牌', 'puzzle', 2, '滑鼠點擊，Esc 暫停', 198), status: 'ready' },
-  { ...soon('2048', '2048', 'puzzle', 3, '方向鍵或 WASD，Esc 暫停', 192), status: 'ready' },
-  {
-    ...soon('minesweeper', '踩地雷', 'puzzle', 3, '左鍵翻開、右鍵插旗，Esc 暫停', 186),
-    status: 'ready',
-  },
-  {
-    ...soon('sudoku', '數獨', 'puzzle', 4, '滑鼠選格、鍵盤填數字，右鍵寫小字', 180),
-    status: 'ready',
-  },
-  { ...soon('link-up', '連連看', 'puzzle', 2, '滑鼠點擊，Esc 暫停', 174), status: 'ready' },
-  { ...soon('match-three', '三消', 'puzzle', 2, '滑鼠拖曳或點選，Esc 暫停', 168), status: 'ready' },
-  {
-    ...soon('sokoban', '推箱子', 'puzzle', 4, '方向鍵或 WASD，Z 復原，R 重來', 162),
-    status: 'ready',
-  },
+  game('tictactoe', '井字棋', 'puzzle', 1, '滑鼠點擊，Esc 暫停', 210),
+  game('guess-number', '猜數字 1A2B', 'puzzle', 2, '鍵盤輸入數字，Esc 暫停', 204),
+  game('memory-match', '記憶翻牌', 'puzzle', 2, '滑鼠點擊，Esc 暫停', 198),
+  game('2048', '2048', 'puzzle', 3, '方向鍵或 WASD，Esc 暫停', 192),
+  game('minesweeper', '踩地雷', 'puzzle', 3, '左鍵翻開、右鍵插旗，Esc 暫停', 186),
+  game('sudoku', '數獨', 'puzzle', 4, '滑鼠選格、鍵盤填數字，右鍵寫小字', 180),
+  game('link-up', '連連看', 'puzzle', 2, '滑鼠點擊，Esc 暫停', 174),
+  game('match-three', '三消', 'puzzle', 2, '滑鼠拖曳或點選，Esc 暫停', 168),
+  game('sokoban', '推箱子', 'puzzle', 4, '方向鍵或 WASD，Z 復原，R 重來', 162),
   // 經典街機（紅橘）
-  { ...soon('snake', '貪食蛇', 'arcade', 2, '方向鍵或 WASD，Esc 暫停', 355), status: 'ready' },
-  { ...soon('pong', '乒乓', 'arcade', 2, 'W / S 或上下鍵，Esc 暫停', 2), status: 'ready' },
-  { ...soon('breakout', '打磚塊', 'arcade', 3, '左右鍵或滑鼠，空白鍵發球', 10), status: 'ready' },
-  {
-    ...soon('tetris', '俄羅斯方塊', 'arcade', 4, '方向鍵、空白鍵直落、C 暫存', 18),
-    status: 'ready',
-  },
-  {
-    ...soon('space-invaders', '太空侵略者', 'arcade', 3, '左右鍵、空白鍵射擊', 25),
-    status: 'ready',
-  },
-  { ...soon('pacman', '小精靈', 'arcade', 4, '方向鍵或 WASD，Esc 暫停', 32), status: 'ready' },
+  game('snake', '貪食蛇', 'arcade', 2, '方向鍵或 WASD，Esc 暫停', 355),
+  game('pong', '乒乓', 'arcade', 2, 'W / S 或上下鍵，Esc 暫停', 2),
+  game('breakout', '打磚塊', 'arcade', 3, '左右鍵或滑鼠，空白鍵發球', 10),
+  game('tetris', '俄羅斯方塊', 'arcade', 4, '方向鍵、空白鍵直落、C 暫存', 18),
+  game('space-invaders', '太空侵略者', 'arcade', 3, '左右鍵移動、自動射擊', 25),
+  game('pacman', '小精靈', 'arcade', 4, '方向鍵或 WASD，Esc 暫停', 32),
   // 反應（黃粉）
-  {
-    ...soon('reaction-test', '反應速度測試', 'reflex', 1, '滑鼠點擊或空白鍵', 52),
-    status: 'ready',
-  },
-  { ...soon('whack-a-mole', '打地鼠', 'reflex', 2, '滑鼠點擊，Esc 暫停', 46), status: 'ready' },
-  { ...soon('flappy', 'Flappy', 'reflex', 4, '空白鍵、↑ 或滑鼠點擊', 340), status: 'ready' },
-  { ...soon('catch-fruit', '接水果', 'reflex', 2, '左右鍵或滑鼠', 332), status: 'ready' },
-  {
-    ...soon('endless-runner', '無盡跑酷', 'reflex', 3, '空白鍵跳躍（按住跳更高）、↓ 蹲下', 326),
-    status: 'ready',
-  },
+  game('reaction-test', '反應速度測試', 'reflex', 1, '滑鼠點擊或空白鍵', 52),
+  game('whack-a-mole', '打地鼠', 'reflex', 2, '滑鼠點擊，Esc 暫停', 46),
+  game('flappy', 'Flappy', 'reflex', 4, '空白鍵、↑ 或滑鼠點擊', 340),
+  game('catch-fruit', '接水果', 'reflex', 2, '左右鍵或滑鼠', 332),
+  game('endless-runner', '無盡跑酷', 'reflex', 3, '空白鍵跳躍（按住跳更高）、↓ 蹲下', 326),
   // 冒險策略（紫青）
-  {
-    ...soon('tower-defense', '塔防', 'adventure', 4, '滑鼠蓋塔、數字鍵選塔', 282),
-    status: 'ready',
-  },
-  {
-    ...soon('roguelike', 'Roguelike 地牢', 'adventure', 5, '方向鍵移動攻擊、數字鍵用道具', 270),
-    status: 'ready',
-  },
-  {
-    ...soon('card-battle', '卡牌戰鬥', 'adventure', 4, '滑鼠點牌出牌、數字鍵快捷', 200),
-    status: 'ready',
-  },
-  {
-    ...soon('bullet-hell', '彈幕射擊', 'adventure', 5, '方向鍵移動、Shift 慢速、Space 炸彈', 186),
-    status: 'ready',
-  },
+  game('tower-defense', '塔防', 'adventure', 4, '滑鼠蓋塔、數字鍵選塔', 282),
+  game('roguelike', 'Roguelike 地牢', 'adventure', 5, '方向鍵移動攻擊、數字鍵用道具', 270),
+  game('card-battle', '卡牌戰鬥', 'adventure', 4, '滑鼠點牌出牌、數字鍵快捷', 200),
+  game('bullet-hell', '彈幕射擊', 'adventure', 5, '方向鍵移動、Shift 慢速、Space 炸彈', 186),
   // 範例遊戲，只用來驗證框架
   {
     id: 'demo',
