@@ -54,7 +54,10 @@ export const games: readonly GameMeta[] = [
   },
   { ...soon('pacman', '小精靈', 'arcade', 4, '方向鍵或 WASD，Esc 暫停', 32), status: 'ready' },
   // 反應（黃粉）
-  soon('reaction-test', '反應速度測試', 'reflex', 1, '滑鼠點擊', 52),
+  {
+    ...soon('reaction-test', '反應速度測試', 'reflex', 1, '滑鼠點擊或空白鍵', 52),
+    status: 'ready',
+  },
   soon('whack-a-mole', '打地鼠', 'reflex', 2, '滑鼠點擊', 46),
   soon('flappy', 'Flappy', 'reflex', 4, '空白鍵', 340),
   soon('catch-fruit', '接水果', 'reflex', 2, '左右鍵', 332),
@@ -98,6 +101,7 @@ const loaders: Record<string, () => Promise<GameModule>> = {
   tetris: () => import('./tetris/index.ts'),
   'space-invaders': () => import('./space-invaders/index.ts'),
   pacman: () => import('./pacman/index.ts'),
+  'reaction-test': () => import('./reaction-test/index.ts'),
 }
 
 /** 載入遊戲模組；尚未開發的遊戲會拋錯 */
