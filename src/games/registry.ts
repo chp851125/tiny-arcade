@@ -61,7 +61,10 @@ export const games: readonly GameMeta[] = [
   { ...soon('whack-a-mole', '打地鼠', 'reflex', 2, '滑鼠點擊，Esc 暫停', 46), status: 'ready' },
   { ...soon('flappy', 'Flappy', 'reflex', 4, '空白鍵、↑ 或滑鼠點擊', 340), status: 'ready' },
   { ...soon('catch-fruit', '接水果', 'reflex', 2, '左右鍵或滑鼠', 332), status: 'ready' },
-  soon('endless-runner', '無盡跑酷', 'reflex', 3, '空白鍵跳躍', 326),
+  {
+    ...soon('endless-runner', '無盡跑酷', 'reflex', 3, '空白鍵跳躍（按住跳更高）、↓ 蹲下', 326),
+    status: 'ready',
+  },
   // 冒險策略（紫青）
   soon('tower-defense', '塔防', 'adventure', 4, '滑鼠點擊', 282),
   soon('roguelike', 'Roguelike 地牢', 'adventure', 5, '方向鍵、數字鍵', 270),
@@ -105,6 +108,7 @@ const loaders: Record<string, () => Promise<GameModule>> = {
   'whack-a-mole': () => import('./whack-a-mole/index.ts'),
   flappy: () => import('./flappy/index.ts'),
   'catch-fruit': () => import('./catch-fruit/index.ts'),
+  'endless-runner': () => import('./endless-runner/index.ts'),
 }
 
 /** 載入遊戲模組；尚未開發的遊戲會拋錯 */
